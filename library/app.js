@@ -10,20 +10,31 @@ const port = process.env.PORT || 3000;
 
 app.use(morgan('tiny'));
 app.use(express.static(path.join(__dirname, '/public/')));
-app.use('/css', express.static(path.join(__dirname, '/node_modules/bootrstrap/dist/css')));
-app.use('/js', express.static(path.join(__dirname, '/node_modules/bootrstrap/dist/js')));
-app.use('/js', express.static(path.join(__dirname, '/node_modules/jquery/dist/')));
-
-app.set('views', 'src/views');
+app.use('/css', express.static(path.join(__dirname, '/node_modules/bootstrap/dist/css')));
+app.use('/js', express.static(path.join(__dirname, '/node_modules/bootstrap/dist/js')));
+app.use('/js', express.static(path.join(__dirname, '/node_modules/jquery/dist')));
+app.set('views', './src/views');
 app.set('view engine', 'ejs');
 
+const nav = [
+    { link: '/books', title: 'Book' },
+    { link: '/authors', title: 'Author' }
+];
+
+const bookRouter = require('./src/routes/bookRoutes')(nav);
+
+app.use('/books', bookRouter);
 app.get('/', (req, res) => {
-    res.render('index', {
-        list: ['a', 'b', 'c'],
-        title: 'Library'
-    });
+    res.render(
+        'index', {
+            nav: [{ link: '/books', title: 'Books' },
+                { link: '/authors', title: 'Authors' }
+            ],
+            title: 'Library'
+        }
+    );
 });
 
 app.listen(port, () => {
-    debug(`Listening on port ${chalk.green(port)}`);
+    debug(`listening on port ${chalk.green(port)}`);
 });
